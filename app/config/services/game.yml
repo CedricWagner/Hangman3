@@ -1,0 +1,30 @@
+services:
+  app.game.loader.file.xml:
+    class: "AppBundle\\Game\\Loader\\XmlFileLoader"
+    public: false
+  app.game.loader.file.txt:
+    class: "AppBundle\\Game\\Loader\\TextFileLoader"
+    public: false
+
+  app.game.word_list:
+    class: "AppBundle\\Game\\WordList"
+    calls:
+      - ["addLoader",["txt","@app.game.loader.file.txt"]]
+      - ["addLoader",["xml","@app.game.loader.file.xml"]]
+      - ["loadDictionaries",["%app.game.dictionaries%"]]
+  
+  app.game.context:
+    class: "AppBundle\\Game\\GameContext"
+    arguments: ['@session']
+    public: false
+
+  app.game.handler:
+    class: "AppBundle\\Game\\GameHandler"
+    arguments:
+      - '@app.game.context'
+      - '@app.game.word_list'
+      - '%app.game.words_length%'
+    public: false
+
+  game_handler:
+    alias: app.game.handler
